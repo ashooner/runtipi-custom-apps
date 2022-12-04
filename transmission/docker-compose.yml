@@ -1,0 +1,53 @@
+version: "3.7"
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    # dns:
+    #   - ${DNS_IP}
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - USER=${TRANSMISSION_USERNAME}
+      - PASS=${TRANSMISSION_PASSWORD}
+      - TRANSMISSION_WEB_HOME=/transmission-web-control/
+      # - WHITELIST=iplist #optional
+      # - PEERPORT=peerport #optional
+      # - HOST_WHITELIST=dnsnane list #optional
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/config
+      # - ${ROOT_FOLDER_HOST}/media/torrents:/downloads
+      - /mnt/unraid-media/tipi/torrents:/downloads
+    # ports:
+    #   - ${APP_PORT}:9091
+    #   - 51413:51413
+    #   - 51413:51413/udp
+    restart: unless-stopped
+    # networks:
+    #   - tipi_main_network
+    network_mode: "service:gluetun"
+    labels:
+      traefik.enable: ${APP_EXPOSED}
+      traefik.http.routers.transmission.rule: Host(`${APP_DOMAIN}`)
+      traefik.http.routers.transmission.entrypoints: websecure
+      traefik.http.routers.transmission.service: transmission
+      traefik.http.routers.transmission.tls.certresolver: myresolver
+      traefik.http.services.transmission.loadbalancer.server.port: 9091
+#Trying out gluetun to manage VPN, see https://github.com/meienberger/runtipi/issues/222
+  gluetun:
+    container_name: gluetun
+    image: qmcgaw/gluetun
+    ports:
+      - ${APP_PORT}:9091
+      - 51413:51413
+      - 51413:51413/udp
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - OPENVPN_USER=aFobAikrKmqs2jyvstiJKTtj
+      # - OPENVPN_USER=foo
+      - OPENVPN_PASSWORD=EgBSAdE2w8qV2JTwHNgdRhPr
+      - SERVER_REGIONS=Netherlands
+
