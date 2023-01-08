@@ -1,0 +1,23 @@
+version: "3"
+services:
+  jellyseerr:
+    container_name: jellyseerr
+    image: fallenbagel/jellyseerr:1.2.1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data/config:/app/config
+    ports:
+      - ${APP_PORT}:5055
+    restart: unless-stopped
+    dns:
+      - ${DNS_IP}
+    networks:
+      - tipi_main_network
+    labels:
+      traefik.enable: ${APP_EXPOSED}
+      traefik.http.routers.jellyseerr.rule: Host(`${APP_DOMAIN}`)
+      traefik.http.routers.jellyseerr.entrypoints: websecure
+      traefik.http.routers.jellyseerr.service: jellyseerr
+      traefik.http.routers.jellyseerr.tls.certresolver: myresolver
+      traefik.http.services.overseerr.loadbalancer.server.port: 5055

@@ -1,0 +1,16 @@
+{
+  "$schema": "../schema.json",
+  "name": "Jellyeerr",
+  "available": true,
+  "exposable": true,
+  "port": 61170,
+  "id": "jellyseerr",
+  "tipi_version": 3,
+  "version": "1",
+  "categories": ["media", "utilities"],
+  "description": "Jellyseerr is a free and open source software application for managing requests for your media library. It integrates with your existing services, such as Sonarr, Radarr, and Jellyfin!",
+  "short_desc": "Request management and media discovery tool for the Jellyfin and Emby ecosystem",
+  "author": " Fallenbagel",
+  "source": "https://github.com/Fallenbagel/jellyseerr",
+  "form_fields": []
+}

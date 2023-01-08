@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  radarr4k:
+    image: lscr.io/linuxserver/radarr:4.2.4
+    container_name: radarr4k
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    dns:
+      - ${DNS_IP}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${APP_DATA_DIR}/data:/config
+      - ${ROOT_FOLDER_HOST}/media:/media
+    ports:
+      - ${APP_PORT}:7878
+    restart: unless-stopped
+    networks:
+      - tipi_main_network
+    labels:
+      traefik.enable: ${APP_EXPOSED}
+      traefik.http.routers.radarr4k.rule: Host(`${APP_DOMAIN}`)
+      traefik.http.routers.radarr4k.entrypoints: websecure
+      traefik.http.routers.radarr4k.service: radarr4k
+      traefik.http.routers.radarr4k.tls.certresolver: myresolver
+      traefik.http.services.radarr4k.loadbalancer.server.port: 7878
