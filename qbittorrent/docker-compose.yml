@@ -3,8 +3,8 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:4.4.5
     container_name: qbittorrent
-    dns:
-      - ${DNS_IP}
+    # dns:
+    #   - ${DNS_IP}
     environment:
       - PUID=1000
       - PGID=1000
@@ -12,14 +12,16 @@ services:
       - WEBUI_PORT=${APP_PORT}
     volumes:
       - ${APP_DATA_DIR}/data/config:/config
-      - ${ROOT_FOLDER_HOST}/media/torrents:/downloads
-    ports:
-      - ${APP_PORT}:${APP_PORT}
-      - 6881:6881
-      - 6881:6881/udp
+      # - ${ROOT_FOLDER_HOST}/media/torrents:/downloads
+      - /mnt/unraid-media/tipi/data:/data
+    # ports:
+    #   - ${APP_PORT}:${APP_PORT}
+    #   - 6881:6881
+    #   - 6881:6881/udp
     restart: unless-stopped
-    networks:
-      - tipi_main_network
+    # networks:
+      # - tipi_main_network
+    network_mode: "service:gluetun"
     labels:
       traefik.enable: ${APP_EXPOSED}
       traefik.http.routers.qbittorrent.rule: Host(`${APP_DOMAIN}`)
@@ -27,4 +29,18 @@ services:
       traefik.http.routers.qbittorrent.service: qbittorrent
       traefik.http.routers.qbittorrent.tls.certresolver: myresolver
       traefik.http.services.qbittorrent.loadbalancer.server.port: ${APP_PORT}
-
+  gluetun:
+      container_name: gluetun
+      image: qmcgaw/gluetun
+      ports:
+        - ${APP_PORT}:${APP_PORT}
+        - 51413:51413
+        - 51413:51413/udp
+      cap_add:
+        - NET_ADMIN
+      environment:
+        - VPN_SERVICE_PROVIDER=nordvpn
+        - OPENVPN_USER=aFobAikrKmqs2jyvstiJKTtj
+        # - OPENVPN_USER=foo
+        - OPENVPN_PASSWORD=EgBSAdE2w8qV2JTwHNgdRhPr
+        - SERVER_REGIONS=Netherlands

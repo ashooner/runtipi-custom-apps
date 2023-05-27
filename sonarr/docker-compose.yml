@@ -8,12 +8,13 @@ services:
       - PGID=1000
       - TZ=${TZ}
     dns:
-      - ${DNS_IP}
+      # - ${DNS_IP}
+      - 94.140.14.140
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${APP_DATA_DIR}/data:/config
       # - ${ROOT_FOLDER_HOST}/media:/media
-      - /mnt/unraid-media/tipi:/media
+      - /mnt/unraid-media/tipi/data:/data
     ports:
       - ${APP_PORT}:8989
     restart: unless-stopped

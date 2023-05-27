@@ -1,0 +1,25 @@
+version: "2.1"
+services:
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/data:/config
+      # - ${ROOT_FOLDER_HOST}/downloads:/downloads
+      - /mnt/unraid-media/tipi/data:/data
+    ports:
+      - ${APP_PORT}:8085
+    restart: unless-stopped
+    networks:
+      - tipi_main_network
+    labels:
+      traefik.enable: ${APP_EXPOSED}
+      traefik.http.routers.sabnzbd.rule: Host(`${APP_DOMAIN}`)
+      traefik.http.routers.sabnzbd.entrypoints: websecure
+      traefik.http.routers.sabnzbd.service: sabnzbd
+      traefik.http.routers.sabnzbd.tls.certresolver: myresolver
+      traefik.http.services.sabnzbd.loadbalancer.server.port: 8085
